@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Regalias</title>
+    <style>
+        /* Estilos globales */
+        * {
+            box-sizing: border-box;
+        }
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #EBEBEB;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+        /* Estilos del encabezado */
+        header {
+            background-color: #333;
+            color: #fff;
+            text-align: center;
+            padding: 1rem;
+        }
+        /* Estilos de la barra de navegación */
+        nav {
+            background-color: #444;
+            text-align: center;
+            padding: 0.5rem;
+        }
+        nav a {
+            color: #fff;
+            text-decoration: none;
+            margin: 0 1rem;
+        }
+        /* Estilos del contenido principal */
+        .container {
+            /* max-width: 1200px;*/
+            margin: 0 0;
+            padding: 2rem;
+        }
+        /* Estilos del pie de página */
+        footer {
+            background-color: #333;
+            color: #fff;
+            text-align: center;
+            padding: 1rem;
+            margin-top: auto;
+            width: 100%;
+        }
+        /* Estilos básicos para la tabla */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            border: 1px solid #ddd;
+        }
+        th, td {
+            padding: 8px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        
+        a {
+            text-decoration: none; 
+            outline: none; 
+            color: inherit; 
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        /* Estilos para el contenedor de filtros */
+        .filtros {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+            padding: 15px; /* Añadir relleno al contenedor */
+            background-color: #fff; /* Color de fondo blanco */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Sombra */
+            border-radius: 5px; /* Bordes redondeados */
+        }
+
+        /* Estilos para las etiquetas */
+        label {
+            display: block; /* Ocupar todo el ancho */
+            margin-bottom: 5px;
+        }
+
+        /* Estilos para los selects */
+        select {
+            width: 200px;
+            padding: 5px;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+        }
+
+        /* Estilos para los inputs */
+        input[type="number"] {
+            width: 110px;
+            padding: 5px;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+        }
+
+        /* Styles for the action buttons */
+        .action-buttons {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .action-buttons button {
+            padding: 0.5rem 1rem;
+            margin: 0.5rem;
+            border: none;
+            border-radius: 5px;
+            background-color: #333c87;
+            color: #fff;
+            cursor: pointer;
+            transition: background-color 0.2s ease-in-out;
+        }
+
+        .action-buttons button:hover {
+            background-color: #282f6b;
+        }
+
+        .action-buttons button:active {
+            background-color: #1d244f;
+        }
+
+        .contenedor-artista {
+            display: flex; /* Activar el modo flexbox */
+            align-items: center; /* Alinear verticalmente el contenido */
+            justify-content: center; /* Alinear horizontalmente el contenido */
+        }
+        .alert-box {
+            /* Styles for the alert box container */
+            display: none; /* Initially hidden */
+            position: fixed; /* Position in the viewport */
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%); /* Center the box */
+            background-color: #ff9999;
+            color: #333;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            z-index: 100; /* Ensure it's visible on top of other elements */
+        }
+
+        .alert-message {
+            /* Styles for the alert message text */
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        .alert-close {
+            /* Styles for the close button */
+            background-color: transparent;
+            border: none;
+            cursor: pointer;
+        }
+
+        /* Show the alert box when the error condition is met */
+        .alert-box.show {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Mus!c</h1>
+    </header>
+    <nav>
+        <a href="{% url 'inicio' %}">Inicio</a>
+        <a href="{% url 'catalogo' %}">Catálogo</a>
+        <a href="{% url 'artistas' %}">Artistas</a>
+        <a href="{% url 'ventas' %}">Ventas</a>
+    </nav>
+      
+    <div class="container">
+        <form action="{% url 'inspeccionAlbum' %}" method="POST">
+            {% csrf_token %}
+            <div class="filtros">            
+                <div class="contenedor-filtros">
+                    <label for="album">Album:</label>
+                    <select id="album" name="album">
+                        {% for opcion in albums %}
+                            <option value="{{opcion.0}}">{{opcion.0}}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            
+                <div class="action-buttons">
+                    <button type="submit">Inspeccionar</button>
+                </div>
+            </div>
+        </form>
+        <div class="tabla-container">
+            <table class="tabla-resultados">
+                <thead>
+                    <tr>
+                        <th>Titulo canción</th>
+                        <th>Duración</th>
+                        <th>Album</th>
+                        <th>Fecha lanzamiento</th>
+                        <th>Precio</th>
+                        <th>Edición</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for can in canciones %}
+                        <tr>
+                            <td>{{ can.0 }}</td>
+                            <td>{{ can.1 }}</td>
+                            <td>{{ can.2 }}</td>
+                            <td>{{ can.3 }}</td>
+                            <td>{{ can.4 }}</td>
+                            <td>{{ can.5 }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <footer>
+        <p>&copy; 2024 Mus!c</p>
+    </footer>
+</body>
+</html>
